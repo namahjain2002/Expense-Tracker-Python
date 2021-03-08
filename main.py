@@ -1,3 +1,7 @@
+'''
+Denarii
+'''
+
 from tkinter import *
 import sqlite3
 from new_wallet import *
@@ -23,12 +27,14 @@ class Main:
         self.mainFrame.pack(fill=BOTH, expand = True)
         self.trans_frame = TransactionFrame(self.root, self)
         self.wallet_frame = WalletFrame(self.root, self)
+        self.new_wallet_frame = NewWalletFrame(self.root, self)
         self.makeHome()
 
     def showWallets(self):
         #show wallets on the landing page
         wallets = self.db.get_all_wallets()
         if wallets:
+
             for i in wallets:
                 name = i[1]
                 f = Frame(self.bottomFrame, bg=self.colors[0], height=57, width=883)
@@ -43,31 +49,30 @@ class Main:
 
     def new_wallet(self):
         #new wallet form window
-        root = Tk()
-        NewWallet(root,self)
-        root.mainloop()
+        self.mainFrame.pack_forget()
+        self.new_wallet_frame.mainFrame.pack(fill=BOTH, expand=1)
 
     def rerender(self):
         #rerender all wallets
         self.mainFrame.pack(fill=BOTH, expand=1)
         for widget in self.bottomFrame.winfo_children():
             widget.destroy()
-        self.showWallets()    
-        
+        self.showWallets()
+
 
     def makeHome(self):
-        #ui for title 
+        #ui for title
         self.topFrame = Frame(self.mainFrame,bg=self.colors[2],height=1000)
         Label(self.topFrame, text="Expense Tracker",fg=self.colors[0],bg=self.colors[2],font=(self.font, 24),padx=15,pady=10).pack(side=LEFT)
         self.addBtn = Button(self.topFrame,command=self.new_wallet,text=" + New Wallet",font=(self.font, 12, "bold"),bd=0, highlightthickness=0, padx=10,pady=10, bg=self.colors[3], fg=self.colors[0])
         self.addBtn.pack(side=RIGHT,padx=10)
-        
+
         self.topFrame.pack(side=TOP, fill=X)
         self.bottomFrame = Frame(self.mainFrame,bg=self.colors[1])
         self.showWallets()
         self.bottomFrame.pack(fill=BOTH)
 
-#run 
+#run
 r = Tk()
 m = Main(r)
 r.mainloop()

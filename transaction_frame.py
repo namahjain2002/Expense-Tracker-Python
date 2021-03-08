@@ -51,32 +51,38 @@ class TransactionFrame:
         self.creditR.grid(row=2,column=1, sticky=W)
         self.transactionBtn = Button(self.sidepane,text="Add Transaction",font=(self.main.font, 12, "bold"),bd=0, highlightthickness=0, padx=50,pady=10, bg="#588B76", fg='#ffffff',command=self.addtrans)
         self.transactionBtn.grid(row=3, column=0,columnspan=2,sticky=W,pady=20)
+        self.debugL = Label(self.sidepane, text='', font=(self.main,14),padx=50,fg=self.main.colors[5])
+        self.debugL.grid(row=4, column=0, columnspan=2, sticky=W)
         self.sidepane.pack(fill=BOTH, side=LEFT)
         
         self.treeV = ttk.Treeview(self.bottomFrame)
         self.treeV['columns'] = ("Amount", "Type", "Category", "Date")
         self.treeV.column("#0", width=0, stretch=NO)
         self.treeV.column("Amount", anchor=W)
-        self.treeV.column("Type", anchor=W)
+        self.treeV.column("Type", anchor=W, width=130)
         self.treeV.column("Category", anchor=W)
         self.treeV.column("Date", anchor=W)
         self.treeV.heading("Amount",text="Amount", anchor=W)
         self.treeV.heading("Type",text="Type",anchor=W)
         self.treeV.heading("Category",text="Category",anchor=W)
         self.treeV.heading("Date",text="Date",anchor=W)
-        # self.main.db.refresh_treev(self.treeV)
-        self.treeV.pack(fill=BOTH, expand=1)
-        self.bottomFrame.pack(fill=BOTH)
+        self.treeV.pack(fill=BOTH, expand=1, side=BOTTOM)
+        self.bottomFrame.pack(fill=BOTH, expand=1)
         self.set_styles()
 
     def addtrans(self):
-        amt = int(self.trans_val.get())
+        amt = float(self.trans_val.get())
         category = categories[self.category.current()]
         typ = self.trans_type.get()
-        if amt > 0:
+        if amt <= self.main.db.get_bal(self.name) or typ=="C" :
             self.main.db.new_transaction(self.name, typ, amt, category, datetime.date.today())
             self.trans_val.delete(0, END)
             self.main.db.refresh_treev(self.treeV, self.name)
+            self.debugL['text'] = 'Successfully Added !'
+            self.debugL['fg'] = self.main.colors[3]
+        else:
+            self.debugL['text'] = "Insufficient Balance !"
+            self.debugL['fg'] = self.main.colors[5]
         
 
     def set_styles(self):
@@ -91,18 +97,30 @@ class TransactionFrame:
             height=450
         )
         self.style.configure("Treeview",
-            background=self.main.colors[0],
+            background=self.main.colors[1],
             foreground=self.main.colors[4],
             fieldbackground=self.main.colors[1],
             rowheight=30,
-            borderwidth=0
+            borderwidth=0,
+            bd=0,
+            highlightthickness=0,
+            font=(self.main.font, 12)
         )
         self.style.map("Treeview", 
             background=[('selected', self.main.colors[2])]
         )
-        self.root.option_add('*TCombobox*Listbox.font', (self.main.font,12))
+        self.style.configure("Treeview.Heading",
+        font=(self.main.font, 14),
+        background=self.main.colors[3],
+        foreground=self.main.colors[0],
+        padding=5,
+        bd=0,
+        highlightthickness=0
+        )
+        
+        self.style.layout("Treeview", [('Treeview.treearea', {'sticky': 'nswe'})])
         self.root.option_add('*TCombobox*Listbox.background', self.main.colors[0])
-        self.root.option_add('*TCombobox*Listbox.foreground', self.main.colors[2])
+        self.root.option_add('*TCombobox*Listbox.foreground', self.main.colors[3])
     
 
     def show(self):

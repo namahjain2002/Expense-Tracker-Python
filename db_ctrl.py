@@ -77,7 +77,7 @@ class DB_manager:
     def get_dncate(self, name):
         conn = sqlite3.connect("Main.db")
         c = conn.cursor()
-        c.execute("select category, amount from transactions where wallet_name='{}' and type='D'".format(name))
+        c.execute("select category, sum(amount) from transactions where wallet_name='{}' and type='D' group by category".format(name))
         data = c.fetchall()
         c.close()
         conn.close()
