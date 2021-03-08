@@ -16,32 +16,32 @@ class NewWallet:
         self.font = 'ubuntu'
         self.db = db_ctrl.DB_manager(self.main)
 
-        self.mainFrame = Frame(self.master, bg="#d0ded8")
+        self.mainFrame = Frame(self.master, bg=self.main.colors[1])
         self.mainFrame.pack(fill=BOTH, expand = True)
 
-        self.topFrame = Frame(self.mainFrame,bg="#85AA9B",height=1000)
-        self.cancelBtn = Button(self.topFrame,text="X Cancel",font=(self.font, 12, "bold"),bd=0, highlightthickness=0, padx=10,pady=10, bg="#FF5E5E", fg='#ffffff',command=self.master.destroy)
+        self.topFrame = Frame(self.mainFrame,bg=self.main.colors[2],height=1000)
+        self.cancelBtn = Button(self.topFrame,text="X Cancel",font=(self.font, 12, "bold"),bd=0, highlightthickness=0, padx=10,pady=10, bg=self.main.colors[5], fg='#ffffff',command=self.master.destroy)
         self.cancelBtn.pack(side=RIGHT,padx=10)
-        self.addBtn = Button(self.topFrame,text="Done",font=(self.font, 12, "bold"),bd=0, highlightthickness=0, padx=10,pady=10, bg="#588B76", fg='#ffffff',command=self.addWallet)
+        self.addBtn = Button(self.topFrame,text="Done",font=(self.font, 12, "bold"),bd=0, highlightthickness=0, padx=10,pady=10, bg=self.main.colors[3], fg='#ffffff',command=self.addWallet)
         self.addBtn.pack(side=RIGHT,padx=10)
-        Label(self.topFrame, text="Create New Wallet",fg="#ffffff",bg="#85AA9B",font=(self.font, 24),padx=15,pady=10).pack(side=LEFT)
+        Label(self.topFrame, text="Create New Wallet",fg=self.main.colors[0],bg=self.main.colors[2],font=(self.font, 24),padx=15,pady=10).pack(side=LEFT)
         self.topFrame.pack(side=TOP, fill=X)
 
-        self.bottomFrame = Frame(self.mainFrame,bg="#d0ded8")
+        self.bottomFrame = Frame(self.mainFrame,bg=self.main.colors[1])
         
-        Label(self.bottomFrame, text="Wallet Name *",fg="#18392b" ,font=(self.font,16,"bold")).grid(row=0, column=0,pady=10, padx=40,sticky=E)
-        self.name = Entry(self.bottomFrame,bd=0,highlightthickness=0,fg="#85aa9b", bg="#ffffff",font=(self.font,14))
+        Label(self.bottomFrame, text="Wallet Name *",fg=self.main.colors[4] ,font=(self.font,16,"bold")).grid(row=0, column=0,pady=10, padx=40,sticky=E)
+        self.name = Entry(self.bottomFrame,bd=0,highlightthickness=0,fg=self.main.colors[2], bg=self.main.colors[0],font=(self.font,14))
         self.name.grid(row=0, column=1,pady=10,ipady=5, ipadx=5,sticky=W)
 
-        Label(self.bottomFrame,fg="#18392b", text="Amount *",font=(self.font,16,"bold")).grid(row=1, padx=40, column=0,pady=10,sticky=E)
-        self.amt = Entry(self.bottomFrame, bd=0,highlightthickness=0,fg="#85aa9b", bg="#ffffff",font=(self.font,14))
+        Label(self.bottomFrame,fg=self.main.colors[4], text="Amount *",font=(self.font,16,"bold")).grid(row=1, padx=40, column=0,pady=10,sticky=E)
+        self.amt = Entry(self.bottomFrame, bd=0,highlightthickness=0,fg=self.main.colors[2], bg=self.main.colors[0],font=(self.font,14))
         self.amt.grid(row=1,ipady=5, ipadx=5,column=1,pady=20,sticky=W)
         
-        Label(self.bottomFrame,fg="#18392b", text="Description ",font=(self.font,16,"bold")).grid(row=2, padx=40, column=0,sticky=E)
-        self.desc = Text(self.bottomFrame, bd=0,height=12,width=32,highlightthickness=0,font=(self.font,14),fg="#85aa9b",padx=5,pady=5)
+        Label(self.bottomFrame,fg=self.main.colors[4], text="Description ",font=(self.font,16,"bold")).grid(row=2, padx=40, column=0,sticky=E)
+        self.desc = Text(self.bottomFrame, bd=0,height=12,width=32,highlightthickness=0,font=(self.font,14),fg=self.main.colors[2],padx=5,pady=5)
         self.desc.grid(row=2,column=1,pady=20,sticky=W)
 
-        self.status = Label(self.bottomFrame, text="",fg="#FF5E5E", font=(self.font,14))
+        self.status = Label(self.bottomFrame, text="",fg=self.main.colors[5], font=(self.font,14))
         self.status.grid(row=3,columnspan=2,column=0)
         self.bottomFrame.pack(fill=BOTH)
 
