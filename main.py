@@ -8,6 +8,9 @@ from new_wallet import *
 from db_ctrl import *
 from wallet_frame import WalletFrame
 from transaction_frame import *
+from add_transaction import *
+from all_transactions import *
+from PIL import Image, ImageTk
 
 #main class
 class Main:
@@ -15,20 +18,36 @@ class Main:
     Main app class
     '''
     def __init__(self,root):
-        #window methods
-        self.colors = ['#ffffff','#d0ded8','#85aa9b','#588b76','#18392b','#FF5E5E']
+        #window methods082a44
+        #self.colors = ['#ffffff','#d0ded8','#85aa9b','#588b76','#18392b','#FF5E5E']
+        self.colors = ['#082a44','#f47279','#2673cf','#ffd5d3','#fbe675','#FF5E5E']
         self.root = root
+        self.root.configure(background=self.colors[0])
         self.root.resizable(0,0)
         self.root.title("Expense Tracker")
         self.root.geometry("1024x576")
         self.db = DB_manager(self)
         self.font = 'ubuntu'
+
+        splashscr = Image.open("assets/splash_screen.png")
+        sprender = ImageTk.PhotoImage(splashscr, Image.ANTIALIAS)
+        self.splash = Label(self.root, image = sprender, bg=self.colors[0])
+        self.splash.img = sprender
+        self.splash.place(x=0,y=0,relwidth=1, relheight=1)
+        self.splash.bind("<Button-1>", self.showmain)
         self.mainFrame = Frame(self.root, bg=self.colors[1])
-        self.mainFrame.pack(fill=BOTH, expand = True)
-        self.trans_frame = TransactionFrame(self.root, self)
+        # self.mainFrame.pack(fill=BOTH, expand = True)
+        self.add_trans_frame = AddTransaction(self.root, self)
         self.wallet_frame = WalletFrame(self.root, self)
         self.new_wallet_frame = NewWalletFrame(self.root, self)
+        self.all_trans_frame = AllTransactions(self.root ,self)
+        bg = Image.open("assets/Dashboard.png")
+        self.render = ImageTk.PhotoImage(bg, Image.ANTIALIAS) 
         self.makeHome()
+
+    def showmain(self, e):
+        self.mainFrame.pack(fill=BOTH, expand = True)
+        self.splash.place_forget()
 
     def showWallets(self):
         #show wallets on the landing page
@@ -45,7 +64,7 @@ class Main:
                 Button(f,text="Delete",font=(self.font, 12, "bold"),bd=0, highlightthickness=0,command=lambda name=name: self.db.deleteWallet(name),padx=20,pady=10, bg=self.colors[5], fg=self.colors[0]).pack(side=RIGHT,padx=5)
                 f.pack(padx=70, pady=25, side=TOP)
         else:
-            Label(self.bottomFrame, text='"You have no wallets :("', font=(self.font,24),padx=50,fg=self.colors[5]).pack(pady=100)
+            Label(self.bottomFrame, text='"You have no wallets :("', font=(self.font,24),padx=50,fg=self.colors[5],bg=self.colors[0]).pack(pady=100)
 
     def new_wallet(self):
         #new wallet form window
@@ -55,22 +74,35 @@ class Main:
     def rerender(self):
         #rerender all wallets
         self.mainFrame.pack(fill=BOTH, expand=1)
+
         for widget in self.bottomFrame.winfo_children():
             widget.destroy()
+        self.background_label = Label(self.bottomFrame, image=self.render)
+        self.background_label.img = self.render
+        self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.showWallets()
+
 
 
     def makeHome(self):
         #ui for title
-        self.topFrame = Frame(self.mainFrame,bg=self.colors[2],height=1000)
-        Label(self.topFrame, text="Expense Tracker",fg=self.colors[0],bg=self.colors[2],font=(self.font, 24),padx=15,pady=10).pack(side=LEFT)
+        self.topFrame = Frame(self.mainFrame,bg=self.colors[0],height=1000)
+        Label(self.topFrame, text="Denarii",fg=self.colors[4],bg=self.colors[0],font=(self.font, 24),padx=15,pady=10).pack(side=LEFT)
+        self.newTransaction = Button(self.topFrame,command=self.add_trans_frame.show,text=" + New Transactions",font=(self.font, 12, "bold"),bd=0, highlightthickness=0, padx=10,pady=10, bg=self.colors[3], fg=self.colors[0])
+        self.newTransaction.pack(side=RIGHT,padx=10)
         self.addBtn = Button(self.topFrame,command=self.new_wallet,text=" + New Wallet",font=(self.font, 12, "bold"),bd=0, highlightthickness=0, padx=10,pady=10, bg=self.colors[3], fg=self.colors[0])
         self.addBtn.pack(side=RIGHT,padx=10)
+        self.allTransactions = Button(self.topFrame,command=self.all_trans_frame.show,text="All Transactions",font=(self.font, 12, "bold"),bd=0, highlightthickness=0, padx=10,pady=10, bg=self.colors[3], fg=self.colors[0])
+        self.allTransactions.pack(side=RIGHT,padx=10)
 
         self.topFrame.pack(side=TOP, fill=X)
         self.bottomFrame = Frame(self.mainFrame,bg=self.colors[1])
+        self.background_label = Label(self.bottomFrame, image=self.render)
+        self.background_label.img = self.render
+        self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
         self.showWallets()
-        self.bottomFrame.pack(fill=BOTH)
+        self.bottomFrame.pack(fill=BOTH, expand=1)
 
 #run
 r = Tk()

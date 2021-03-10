@@ -10,17 +10,17 @@ class DB_manager:
         self.main = main
         conn = sqlite3.connect("Main.db")
         c = conn.cursor()
-        c.execute("create table if not exists wallets(amount NUMERIC, name VARCHAR(20), desc TEXT)")
-        c.execute("create table if not exists transactions(wallet_name VARCHAR(20), type VARCHAR(20), amount NUMERIC, category VARCHAR(20), date DATE)")
+        c.execute("create table if not exists wallets(amount NUMERIC, name VARCHAR(20))")
+        c.execute("create table if not exists transactions(type VARCHAR(20), amount NUMERIC, category VARCHAR(20), date DATE, person_name VARCHAR(20), contact VARCHAR(20))")
         conn.commit()
         c.close()
         conn.close()
 
     #create a new wallet
-    def new_wallet(self,amt,n,desc):
+    def new_wallet(self,amt,n):
         conn = sqlite3.connect("Main.db")
         c = conn.cursor()
-        c.execute("insert into wallets values({},'{}','{}')".format(amt,n,desc))
+        c.execute("insert into wallets values({},'{}')".format(amt,n))
         conn.commit()
         c.close()
         conn.close()
@@ -30,20 +30,28 @@ class DB_manager:
         conn = sqlite3.connect("Main.db")
         c = conn.cursor()
         c.execute("delete from wallets where name='{}'".format(name))
-        c.execute("delete from transactions where wallet_name='{}'".format(name))
+        c.execute("delete from transactions where category='{}'".format(name))
         conn.commit()
         c.close()
         conn.close()        
         self.main.rerender()
         
     #add a new transaction
-    def new_transaction(self,wallet,Type,amount,category,date):
+    def new_transaction(self,person,contact,Type,amount,category,date):
         conn = sqlite3.connect("Main.db")
         c = conn.cursor()
-        c.execute("insert into transactions values('{}','{}',{},'{}','{}')".format(wallet,Type,amount,category,date))
+        c.execute("insert into transactions values('{}',{},'{}','{}','{}','{}')".format(Type,amount,category,date,person,contact))
         conn.commit()
         c.close()
         conn.close()
+
+    #get all categories
+    def get_categories(self):
+        conn = sqlite3.connect("Main.db")
+        c = conn.cursor()
+        c.execute("select name from wallets")
+        return c.fetchall() 
+
         
     #return all wallets as list of tuples
     def get_all_wallets(self):
@@ -53,10 +61,10 @@ class DB_manager:
         return c.fetchall() 
 
     #get all transactions from a wallet
-    def get_all_transactions(self, name):
+    def get_all_transactions(self):
         conn = sqlite3.connect("Main.db")
         c = conn.cursor()
-        c.execute("select * from transactions where wallet_name='{}'".format(name))
+        c.execute("select * from transactions")
         return c.fetchall() 
 
     #get the current balance in a wallet
@@ -66,30 +74,42 @@ class DB_manager:
         return amt+c - d
 
     #fill out the tree view
-    def refresh_treev(self, treev, name):
+    def refresh_treev(self, treev):
         # print(name)
         treev.delete(*treev.get_children())
-        data = self.get_all_transactions(name)
+        data = self.get_all_transactions()
+        print(data)
+        #("Amount", "Type", "Category", "Date","Client", "Contact")
+        #'D', 400, 'google pay', '2021-03-10', 'Namah Jain ', 'www'
         for i in range(len(data)):
-            if data[i][0] == name:
-                treev.insert(parent='', index='end', iid=i,text='', values=(data[i][2],data[i][1],data[i][3],data[i][4]))
+            treev.insert(parent='', index='end', iid=i,text='', values=(data[i][1],data[i][0],data[i][2],data[i][3],data[i][4],data[i][5]))
 
-    def get_dncate(self, name):
+    def get_amtanddate(self, name):
         conn = sqlite3.connect("Main.db")
         c = conn.cursor()
-        c.execute("select category, sum(amount) from transactions where wallet_name='{}' and type='D' group by category".format(name))
-        data = c.fetchall()
+        c.execute("select amount, date from transactions where category='{}' and type='D'".format(name))
+        dataD = c.fetchall()
         c.close()
         conn.close()
-        return data
+        return dataD
     
+    def getAmtAndDate(self):
+        conn = sqlite3.connect("Main.db")
+        c = conn.cursor()
+        c.execute("select total(amount), category from transactions where type='D' group by category")
+        dataD = c.fetchall()
+        c.close()
+        conn.close()
+        return dataD
+        
+
     #get sum of all debits and credits from a wallet
     def get_cnd(self, name):
         conn = sqlite3.connect("Main.db")
         c = conn.cursor()
-        c.execute("select total(amount) from transactions where wallet_name='{}' and type='C'".format(name))
+        c.execute("select total(amount) from transactions where category='{}' and type='C'".format(name))
         creds = c.fetchone()[0]
-        c.execute("select total(amount) from transactions where wallet_name='{}' and type='D'".format(name))
+        c.execute("select total(amount) from transactions where category='{}' and type='D'".format(name))
         debts = c.fetchone()[0]
         c.close()
         conn.close()

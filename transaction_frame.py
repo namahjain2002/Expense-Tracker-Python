@@ -66,7 +66,12 @@ class TransactionFrame:
         self.treeV.heading("Type",text="Type",anchor=W)
         self.treeV.heading("Category",text="Category",anchor=W)
         self.treeV.heading("Date",text="Date",anchor=W)
-        self.treeV.pack(fill=BOTH, expand=1, side=BOTTOM)
+        self.treeV.pack(fill=BOTH, expand=1, side=TOP)
+
+        self.eframe = Frame(self.bottomFrame)
+
+        self.eframe.pack(side = BOTTOM)
+
         self.bottomFrame.pack(fill=BOTH, expand=1)
         self.set_styles()
 
@@ -104,25 +109,24 @@ class TransactionFrame:
             borderwidth=0,
             bd=0,
             highlightthickness=0,
-            font=(self.main.font, 12)
+            font=(self.main.font, 10)
         )
         self.style.map("Treeview", 
             background=[('selected', self.main.colors[2])]
         )
         self.style.configure("Treeview.Heading",
-        font=(self.main.font, 14),
-        background=self.main.colors[3],
-        foreground=self.main.colors[0],
-        padding=5,
-        bd=0,
-        highlightthickness=0
+            font=(self.main.font, 14),
+            background=self.main.colors[3],
+            foreground=self.main.colors[0],
+            padding=5,
+            bd=0,
+            highlightthickness=0
         )
         
         self.style.layout("Treeview", [('Treeview.treearea', {'sticky': 'nswe'})])
-        self.root.option_add('*TCombobox*Listbox.background', self.main.colors[0])
-        self.root.option_add('*TCombobox*Listbox.foreground', self.main.colors[3])
+        self.root.option_add('*TCombobox*Listbox.background', self.main.colors[3])
+        self.root.option_add('*TCombobox*Listbox.foreground', self.main.colors[0])
     
-
     def show(self):
         self.main.wallet_frame.tFrame.pack_forget()
         self.tFrame.pack(fill=BOTH, expand = True)
