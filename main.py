@@ -7,7 +7,6 @@ import sqlite3
 from new_wallet import *
 from db_ctrl import *
 from wallet_frame import WalletFrame
-from transaction_frame import *
 from add_transaction import *
 from all_transactions import *
 from PIL import Image, ImageTk
@@ -29,8 +28,8 @@ class Main:
         photo = PhotoImage(file = "assets/icon.png")
         self.root.iconphoto(False, photo)
         self.db = DB_manager(self)
-        self.font = 'ubuntu'
-
+        self.font = 'Comic Sans MS'
+        self.set_styles()
         splashscr = Image.open("assets/splash_screen.png")
         sprender = ImageTk.PhotoImage(splashscr, Image.ANTIALIAS)
         self.splash = Label(self.root, image = sprender, bg=self.colors[0])
@@ -47,6 +46,44 @@ class Main:
         self.render = ImageTk.PhotoImage(bg, Image.ANTIALIAS) 
         self.makeHome()
 
+    
+    def set_styles(self):
+        self.style = ttk.Style()
+        self.style.configure("TCombobox", 
+            selectbackground=self.colors[1],
+            fieldbackground=self.colors[0],
+            background=self.colors[0],
+            foreground=self.colors[2],
+            selectforeground = self.colors[2],
+            borderwidth=0,
+            height=450
+        )
+        self.style.configure("Treeview",
+            background=self.colors[1],
+            foreground=self.colors[4],
+            fieldbackground=self.colors[1],            
+            rowheight=30,
+            borderwidth=0,
+            bd=0,
+            highlightthickness=0,
+            font=(self.font, 12)
+        )
+        self.style.map("Treeview", 
+            background=[('selected', self.colors[2])]
+        )
+        self.style.configure("Treeview.Heading",
+            font=(self.font, 14),
+            background=self.colors[3],
+            foreground=self.colors[0],
+            padding=5,
+            bd=0,
+            highlightthickness=0
+        )
+        
+        self.style.layout("Treeview", [('Treeview.treearea', {'sticky': 'nswe'})])
+        self.style.theme_use("default")
+        self.root.option_add('*TCombobox*Listbox.background', self.colors[0])
+        self.root.option_add('*TCombobox*Listbox.foreground', self.colors[3])
     def showmain(self, e):
         self.mainFrame.pack(fill=BOTH, expand = True)
         self.splash.place_forget()
@@ -105,7 +142,7 @@ class Main:
     
         self.showWallets()
         self.bottomFrame.pack(fill=BOTH, expand=1)
-
+        
 #run
 r = Tk()
 m = Main(r)

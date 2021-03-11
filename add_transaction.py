@@ -10,7 +10,6 @@ class AddTransaction:
         self.root = root
         self.trans_type = StringVar()
         self.trans_type.set('C')
-        self.set_styles()
         self.categories = self.main.db.get_categories()
         self.tFrame = Frame(self.root, bg=self.main.colors[0])
         self.topFrame = Frame(self.tFrame,bg=self.main.colors[0],height=1000)
@@ -49,7 +48,7 @@ class AddTransaction:
         self.category = ttk.Combobox(self.form,font=(self.main.font,12), values=self.categories,height=5)
         if self.categories:
             self.category.current(0)
-        self.category.grid(row=4,ipady=5, ipadx=5,column=1,pady=20,sticky=W)
+        self.category.grid(row=4,ipady=5,column=1,pady=20,sticky=W)
         
 
         self.form.pack(pady=80)
@@ -65,43 +64,6 @@ class AddTransaction:
         if amt > 0 and len(name) < 20 and len(contact) < 20:
             self.main.db.new_transaction(name, contact, self.trans_type.get(), amt, category, date)
             self.showDashboard()
-        
-    def set_styles(self):
-        self.style = ttk.Style()
-        self.style.configure("TCombobox", 
-            selectbackground=self.main.colors[1],
-            fieldbackground=self.main.colors[0],
-            background=self.main.colors[0],
-            foreground=self.main.colors[2],
-            selectforeground = self.main.colors[2],
-            borderwidth=0,
-            height=450
-        )
-        self.style.configure("Treeview",
-            background=self.main.colors[1],
-            foreground=self.main.colors[4],
-            fieldbackground=self.main.colors[1],
-            rowheight=30,
-            borderwidth=0,
-            bd=0,
-            highlightthickness=0,
-            font=(self.main.font, 12)
-        )
-        self.style.map("Treeview", 
-            background=[('selected', self.main.colors[2])]
-        )
-            self.style.configure("Treeview.Heading",
-            font=(self.main.font, 14),
-            background=self.main.colors[3],
-            foreground=self.main.colors[0],
-            padding=5,
-            bd=0,
-            highlightthickness=0
-        )
-        
-        self.style.layout("Treeview", [('Treeview.treearea', {'sticky': 'nswe'})])
-        self.root.option_add('*TCombobox*Listbox.background', self.main.colors[0])
-        self.root.option_add('*TCombobox*Listbox.foreground', self.main.colors[3])
 
     def show(self):
         self.main.mainFrame.pack_forget()

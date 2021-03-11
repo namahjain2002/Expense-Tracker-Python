@@ -66,7 +66,7 @@ class AllTransactions:
         else:
             data = []
             for i in self.main.db.get_all_transactions():
-                if typed.lower() in i[4].lower():
+                if typed.lower() in i[4].lower() or typed.lower() in i[3].lower():
                     data.append(i)
         
         self.treeV.delete(*self.treeV.get_children())
