@@ -25,7 +25,6 @@ class AllTransactions:
         
         self.treeV = ttk.Treeview(self.bottomFrame)
         self.treeV['columns'] = ("Amount", "Type", "Category", "Date","Client", "Contact")
-
         self.treeV.column("#0", width=0, stretch=NO)
         self.treeV.column("Amount", anchor=W, width=150)
         self.treeV.column("Type", anchor=W, width=40)
@@ -40,28 +39,49 @@ class AllTransactions:
         self.treeV.heading("Client",text="Client",anchor=W)
         self.treeV.heading("Contact",text="Contact",anchor=W)
         self.treeV.pack(fill=BOTH, expand=1, side=TOP)
-    
-        self.ef = Frame(self.bottomFrame)
+        self.line = Frame(self.bottomFrame,bg=self.main.colors[4],pady=3,padx=3).pack(side=TOP, pady=5, fill=X)
+        self.ef = Frame(self.bottomFrame,bg=self.main.colors[0])
         self.fig = Figure(figsize = (7, 5),dpi = 100)
         self.fig.set_facecolor(self.main.colors[0])
         self.ax = self.fig.add_subplot(111)
         self.chartcanv = FigureCanvasTkAgg(self.fig, self.ef)
         self.canv = self.chartcanv.get_tk_widget()
-        self.canv.pack(side=LEFT, fill=BOTH, expand=1)
+        self.canv.pack(side=LEFT, expand=1)
         self.canv['bd'] = 0
         self.canv['highlightthickness'] = 0
         self.canv['bg'] = self.main.colors[0]
+        Label(self.ef, font=(self.main.font, 18),fg=self.main.colors[4],text="Search by client",bg=self.main.colors[0]).pack(side=LEFT)
+        self.search_by_client = Entry(self.ef, bd=0,highlightthickness=0,fg=self.main.colors[2], bg=self.main.colors[3],font=(self.main.font,16))
+        self.search_by_client.bind("<KeyRelease>", self.checkMatch)
+        self.search_by_client.pack(side=LEFT, padx=20)
 
         self.ef.pack(side=BOTTOM)
         self.bottomFrame.pack(fill=BOTH, expand=1)
         self.tplot()
 
+    def checkMatch(self,e):
+        typed = self.search_by_client.get()
+        if typed=='':
+            data = self.main.db.get_all_transactions()
+        else:
+            data = []
+            for i in self.main.db.get_all_transactions():
+                if typed.lower() in i[4].lower():
+                    data.append(i)
+        
+        self.treeV.delete(*self.treeV.get_children())
+        for i in range(len(data)):
+            self.treeV.insert(parent='', index='end', iid=i,text='', values=(data[i][1],data[i][0],data[i][2],data[i][3],data[i][4],data[i][5]))
+
+
     def tplot(self):
         data = self.main.db.getAmtAndDate()
         sizes = [i[0] for i in data]
         labels = [i[1] for i in data]
-        self.ax.pie(sizes, labels = labels, autopct="%1.1f%%", colors=self.main.colors, radius=1.6)
-
+        print(sizes, labels)
+        self.ax.clear()
+        self.ax.pie(sizes, labels = labels, autopct="%1.1f%%", colors=self.main.colors, radius=1.4)
+        self.chartcanv.draw_idle()
 
     def add(self):
         amt = float(self.amt.get())
@@ -104,7 +124,9 @@ class AllTransactions:
     def show(self):
         self.main.mainFrame.pack_forget()
         self.tFrame.pack(fill=BOTH, expand = True)   
-        self.main.db.refresh_treev(self.treeV)    
+
+        self.main.db.refresh_treev(self.treeV)
+        self.tplot() 
 
     def showDashboard(self):
         self.tFrame.pack_forget()

@@ -66,7 +66,6 @@ class AddTransaction:
             self.main.db.new_transaction(name, contact, self.trans_type.get(), amt, category, date)
             self.showDashboard()
         
-
     def set_styles(self):
         self.style = ttk.Style()
         self.style.configure("TCombobox", 
@@ -91,19 +90,18 @@ class AddTransaction:
         self.style.map("Treeview", 
             background=[('selected', self.main.colors[2])]
         )
-        self.style.configure("Treeview.Heading",
-        font=(self.main.font, 14),
-        background=self.main.colors[3],
-        foreground=self.main.colors[0],
-        padding=5,
-        bd=0,
-        highlightthickness=0
+            self.style.configure("Treeview.Heading",
+            font=(self.main.font, 14),
+            background=self.main.colors[3],
+            foreground=self.main.colors[0],
+            padding=5,
+            bd=0,
+            highlightthickness=0
         )
         
         self.style.layout("Treeview", [('Treeview.treearea', {'sticky': 'nswe'})])
         self.root.option_add('*TCombobox*Listbox.background', self.main.colors[0])
         self.root.option_add('*TCombobox*Listbox.foreground', self.main.colors[3])
-    
 
     def show(self):
         self.main.mainFrame.pack_forget()

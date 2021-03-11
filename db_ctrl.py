@@ -67,6 +67,13 @@ class DB_manager:
         c.execute("select * from transactions")
         return c.fetchall() 
 
+    #get all transactions from a wallet
+    def get_all_transactions_from_wallet(self,n):
+        conn = sqlite3.connect("Main.db")
+        c = conn.cursor()
+        c.execute("select * from transactions where category='{}'".format(n))
+        return c.fetchall()
+
     #get the current balance in a wallet
     def get_bal(self, n):
         amt = self.get_wallet(n)[0][0]
@@ -78,7 +85,6 @@ class DB_manager:
         # print(name)
         treev.delete(*treev.get_children())
         data = self.get_all_transactions()
-        print(data)
         #("Amount", "Type", "Category", "Date","Client", "Contact")
         #'D', 400, 'google pay', '2021-03-10', 'Namah Jain ', 'www'
         for i in range(len(data)):
@@ -101,7 +107,6 @@ class DB_manager:
         c.close()
         conn.close()
         return dataD
-        
 
     #get sum of all debits and credits from a wallet
     def get_cnd(self, name):

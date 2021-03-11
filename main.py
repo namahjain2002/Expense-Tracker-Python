@@ -24,8 +24,10 @@ class Main:
         self.root = root
         self.root.configure(background=self.colors[0])
         self.root.resizable(0,0)
-        self.root.title("Expense Tracker")
+        self.root.title("Denarii - Your daily expense tracker")
         self.root.geometry("1024x576")
+        photo = PhotoImage(file = "assets/icon.png")
+        self.root.iconphoto(False, photo)
         self.db = DB_manager(self)
         self.font = 'ubuntu'
 

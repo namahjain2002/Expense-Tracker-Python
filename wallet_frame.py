@@ -44,37 +44,30 @@ class WalletFrame:
         self.topf.pack(side=TOP,fill=X, expand=1)
         
         self.line = Frame(self.bottomFrame,bg=self.main.colors[4],pady=3,padx=3).pack(side=TOP, pady=5, fill=X)
-
-        self.botf = Frame(self.bottomFrame, bg=self.main.colors[0])
-        #canvas and transaction table
         
-        self.fig = Figure(figsize = (7, 5),dpi = 100)
-        self.fig.set_facecolor(self.main.colors[0])
-        self.ax = self.fig.add_subplot(111)
-        self.chartcanv = FigureCanvasTkAgg(self.fig, self.botf)
-        self.canv = self.chartcanv.get_tk_widget()
-        self.canv.pack(side=RIGHT, fill=BOTH, expand=1)
-        self.canv['bd'] = 0
-        self.canv['highlightthickness'] = 0
-        self.canv['bg'] = self.main.colors[0]
-        self.botf.pack(side=BOTTOM, fill=BOTH, expand=1)
+        self.treeV = ttk.Treeview(self.bottomFrame)
+        self.treeV['columns'] = ("Amount", "Type", "Date","Client", "Contact")
+        self.treeV.column("#0", width=0, stretch=NO)
+        self.treeV.column("Amount", anchor=W)
+        self.treeV.column("Type", anchor=W)
+        self.treeV.column("Date", anchor=W)
+        self.treeV.column("Client", anchor=W)
+        self.treeV.column("Contact", anchor=W)
+        self.treeV.heading("Amount",text="Amount", anchor=W)
+        self.treeV.heading("Type",text="Type",anchor=W)
+        self.treeV.heading("Date",text="Date",anchor=W)
+        self.treeV.heading("Client",text="Client",anchor=W)
+        self.treeV.heading("Contact",text="Contact",anchor=W)
+        self.treeV.pack(fill=BOTH, expand=1, side=TOP)
+    
+
         self.bottomFrame.pack(fill=BOTH,side=TOP)
 
-    def tplot(self):
-        self.fig.clear(True)
-        data = self.main.db.get_amtanddate(self.name)
-        raw_dates1 = [i[1] for i in data[1]]
-        values1 = [i[0] for i in data[1]]
-        dates1 = [datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in raw_dates1]
-        raw_dates2 = [i[1] for i in data[0]]
-        values2 = [i[0] for i in data[0]]
-        dates2 = [datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in raw_dates1]
-        print(dates2, dates1)
-        self.ax = self.fig.add_subplot(111)
-        self.ax.plot(dates1,values1,color='r')
-        # self.ax.plot(dates2,values2,color='g')
-        
-        #self.ax.plot(dates2,values2)
+    def refresh_tview(self):
+        data = self.main.db.get_all_transactions_from_wallet(self.name)
+        self.treeV.delete(*self.treeV.get_children())
+        for i in range(len(data)):
+            self.treeV.insert(parent='', index='end', iid=i,text='', values=(data[i][1],data[i][0],data[i][3],data[i][4],data[i][5]))
 
 
     def show(self, name):
@@ -87,7 +80,7 @@ class WalletFrame:
         self.credits["text"] = '+'+str(wDetails[0][0] + creds)
         self.currentBal['text'] = str(wDetails[0][0] + creds - debts)
         self.expenseLabel['text'] = '-'+str(debts)
-        self.tplot()
+        self.refresh_tview()
 
     def showDashboard(self):
         self.tFrame.pack_forget()
