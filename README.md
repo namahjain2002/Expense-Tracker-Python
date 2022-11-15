@@ -18,20 +18,11 @@ Without and authentication it runs locally on your device
 - Matpltlib
 - Pillow
 
-## Installation
-
-Dillinger requires Matplotlib and Pillow v10+ to run.  
-Install the dependencies and devDependencies and run main.py file.
+## How to run ?
 
 For Windows
 ```sh
-pip install matplotlib pillow
+pip install -r requirements.txt
 python main.py
-```
-
-For Unix/Linux
-```sh
-sudo pip3 install matplotlib pillow
-python3 main.py
 ```
 
